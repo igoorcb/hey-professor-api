@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 use Laravel\Sanctum\Sanctum;
 
 use function Pest\Laravel\assertDatabaseHas;
@@ -21,7 +20,7 @@ it('can create a question', function () {
     ]);
 });
 
-it('after creating a new question, i need make sure that it creates on _draft_ status', function () {
+test('after creating a new question, i need make sure that it creates on _draft_ status', function () {
     $user = User::factory()->create();
 
     Sanctum::actingAs($user);
@@ -35,4 +34,15 @@ it('after creating a new question, i need make sure that it creates on _draft_ s
         'status'   => 'draft',
         'question' => 'test question',
     ]);
+});
+
+describe('validation rules', function () {
+    it('question::require', function () {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        \Pest\Laravel\postJson(route('questions.store', []))
+        ->assertJsonValidationErrors(['question']);
+    });
 });
